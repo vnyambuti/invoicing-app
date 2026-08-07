@@ -1,0 +1,178 @@
+@import '/vendor/filament/filament/resources/css/theme.css';
+
+@config 'tailwind.config.js';
+
+
+.fi-topbar {
+    background-color: #2b3a55;
+
+    border-bottom: 3px solid #d9a441;
+
+}
+
+.fi-topbar nav {
+    background-color: #2b3a55;
+}
+
+
+.fi-topbar,
+.fi-topbar * {
+    color: #ffffff;
+}
+
+
+.fi-topbar button svg,
+.fi-topbar a svg {
+    color: #ffffff;
+}
+
+
+.fi-topbar .fi-avatar {
+    background-color: #ffffff;
+    color: #2b3a55;
+}
+
+.ar-invoice-form {
+    font-size: 12px;
+    background: #fff;
+}
+
+
+.ar-invoice-form .ar-inline-field {
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ar-invoice-form .ar-inline-field .fi-fo-field-wrp-label {
+    min-width: 8.5rem;
+    flex-shrink: 0;
+    font-weight: 500;
+    color: #1F3864;
+}
+
+.ar-invoice-form .ar-inline-field input,
+.ar-invoice-form .ar-inline-field select,
+.ar-invoice-form .ar-inline-field button {
+    min-height: 1.65rem;
+    padding-top: 0.15rem;
+    padding-bottom: 0.15rem;
+    font-size: 12px;
+    border-color: #cbd5e1;
+}
+
+.ar-invoice-form .ar-inline-field input:disabled {
+    background: #f1f4f7;
+    color: #475569;
+    border-color: #e2e8f0;
+}
+
+
+.ar-invoice-form .ar-narrow-field {
+    max-width: 22rem;
+}
+
+
+.ar-invoice-header {
+    padding: 10px 12px 14px;
+}
+
+.ar-invoice-header-left .ar-customer-name-field input {
+    font-weight: 700;
+    color: #1F3864;
+}
+
+
+.ar-invoice-tabs .fi-tabs {
+    padding: 0 8px;
+}
+
+.ar-invoice-tabs .fi-tabs-item {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    color: #64748b;
+}
+
+.ar-invoice-tabs .fi-tabs-item[aria-selected="true"] {
+    border-bottom: 2px solid #D4A017;
+    color: #1F3864;
+}
+
+.ar-invoice-tabs .fi-tabs-panel {
+    padding: 10px 12px;
+}
+
+
+.ar-line-type-filter {
+    max-width: 220px;
+    margin-bottom: 8px;
+}
+
+
+.ar-invoice-lines input,
+.ar-invoice-lines select {
+    min-height: 1.6rem;
+    font-size: 12px;
+}
+
+.ar-invoice-lines input.text-right,
+.ar-invoice-lines .text-right input {
+    text-align: right;
+}
+
+
+.ar-invoice-footer {
+    padding: 14px 12px 10px;
+}
+
+.ar-invoice-totals {
+    background: #f8fafc;
+    padding: 10px 12px;
+    border-radius: 4px;
+}
+
+.ar-invoice-totals .ar-inline-field .fi-fo-field-wrp-label {
+    min-width: 9rem;
+}
+
+.ar-invoice-totals input.text-right,
+.ar-invoice-totals .text-right input {
+    text-align: right;
+}
+
+
+.ar-invoice-totals .ar-total-row input {
+    font-weight: 700;
+    color: #1F3864;
+    background: #fff;
+}
+
+
+input.text-right {
+    text-align: right;
+}
+
+
+
+.ar-invoice-lines .ar-line-select-with-create,
+.ar-invoice-lines .ar-line-select-with-create+.fi-fo-select-action,
+.ar-invoice-lines td:has(.ar-line-select-with-create) {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+}
+
+.ar-invoice-lines td:has(.ar-line-select-with-create) .fi-fo-field-wrp,
+.ar-invoice-lines td:has(.ar-line-select-with-create) .choices,
+.ar-invoice-lines .ar-line-select-with-create {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.ar-invoice-lines td:has(.ar-line-select-with-create) button {
+    flex: 0 0 auto;
+}

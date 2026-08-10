@@ -1,19 +1,3 @@
-# ---- Stage 1: build frontend assets ----
-FROM node:20-alpine AS frontend
-
-WORKDIR /app
-
-COPY package.json package-lock.json* ./
-RUN npm ci
-
-COPY resources ./resources
-COPY vite.config.js ./
-COPY postcss.config.js* ./
-COPY public ./public
-
-RUN npm run build
-
-# ---- Stage 2: PHP application ----
 FROM php:8.4-fpm
 
 # ---- System packages ----
@@ -33,6 +17,11 @@ RUN apt-get update && apt-get install -y \
     zip \
     && rm -rf /var/lib/apt/lists/*
 
+# ---- Node.js (needed to build Vite/Tailwind assets, which import from vendor/filament) ----
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
 # ---- PHP extensions ----
 RUN docker-php-ext-install pdo pdo_pgsql pgsql mbstring exif pcntl bcmath gd zip intl
 
@@ -43,10 +32,11 @@ WORKDIR /var/www/html
 
 COPY . .
 
-# Bring in the compiled frontend assets from the Node stage
-COPY --from=frontend /app/public/build /var/www/html/public/build
-
+# vendor/ must exist BEFORE the frontend build, since theme.css imports from
+# vendor/filament/filament/resources/css/theme.css
 RUN composer install --optimize-autoloader --no-dev --no-interaction
+
+RUN npm ci && npm run build
 
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/storage /var/www/html/bootstrap/cache

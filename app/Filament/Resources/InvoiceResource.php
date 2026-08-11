@@ -49,7 +49,7 @@ class InvoiceResource extends Resource
                         ->schema([
 
                             Forms\Components\Grid::make(1)
-                                ->columnSpan(2)
+                                ->columnSpan(3)
                                 ->extraAttributes(['class' => 'ar-invoice-header-left'])
                                 ->schema([
                                     Forms\Components\Select::make('customer_id')
@@ -63,7 +63,7 @@ class InvoiceResource extends Resource
                                         ->live()
                                         ->inlineLabel()
                                         ->extraAttributes(['class' => 'ar-inline-field'])
-                                        ->afterStateUpdated(fn(Set $set, $state) => $set('customer_id_mirror', $state))
+                                        ->afterStateUpdated(fn(Set $set, $state) => self::syncCustomerFields($set, $state))
                                         ->createOptionForm([
                                             Forms\Components\TextInput::make('code')
                                                 ->label('Customer Code')
@@ -93,27 +93,10 @@ class InvoiceResource extends Resource
                                             ->modalWidth('lg'))
                                         ->placeholder(null),
 
-                                    Forms\Components\Select::make('customer_id_mirror')
-                                        ->label('Name')
-                                        ->options(fn() => Customer::pluck('name', 'id'))
-                                        ->searchable()
-                                        ->getSearchResultsUsing(fn(string $search) => self::searchCustomersByName($search))
-                                        ->getOptionLabelUsing(fn($value) => Customer::find($value)?->name)
-                                        ->live()
-                                        ->dehydrated(false)
-                                        ->inlineLabel()
-                                        ->extraAttributes(['class' => 'ar-inline-field'])
-                                        ->afterStateUpdated(fn(Set $set, $state) => $set('customer_id', $state))
-                                        ->default(fn(Get $get) => $get('customer_id'))
-                                        ->placeholder(null),
-
-                                    Forms\Components\TextInput::make('contact_person_display')
+                                    Forms\Components\TextInput::make('contact_person')
                                         ->label('Contact Person')
-                                        ->disabled()
-                                        ->dehydrated(false)
                                         ->inlineLabel()
-                                        ->extraAttributes(['class' => 'ar-inline-field'])
-                                        ->formatStateUsing(fn(Get $get) => Customer::find($get('customer_id'))?->contact_person),
+                                        ->extraAttributes(['class' => 'ar-inline-field']),
 
                                     Forms\Components\TextInput::make('customer_name')
                                         ->label('Customer Name')
@@ -121,31 +104,25 @@ class InvoiceResource extends Resource
                                         ->extraAttributes(['class' => 'ar-inline-field ar-customer-name-field'])
                                         ->extraInputAttributes(['class' => 'font-bold']),
 
-                                    Forms\Components\TextInput::make('bp_currency_display')
+                                    Forms\Components\TextInput::make('bp_currency')
                                         ->label('BP Currency')
-                                        ->disabled()
-                                        ->dehydrated(false)
                                         ->inlineLabel()
-                                        ->extraAttributes(['class' => 'ar-inline-field'])
-                                        ->formatStateUsing(fn(Get $get) => Customer::find($get('customer_id'))?->bp_currency ?? 'KES'),
+                                        ->extraAttributes(['class' => 'ar-inline-field']),
 
-                                    Forms\Components\TextInput::make('kra_pin_display')
+                                    Forms\Components\TextInput::make('kra_pin')
                                         ->label('KRA PIN')
-                                        ->disabled()
-                                        ->dehydrated(false)
                                         ->inlineLabel()
-                                        ->extraAttributes(['class' => 'ar-inline-field'])
-                                        ->formatStateUsing(fn(Get $get) => Customer::find($get('customer_id'))?->kra_pin),
+                                        ->extraAttributes(['class' => 'ar-inline-field']),
                                 ]),
 
 
                             Forms\Components\Grid::make(1)
-                                ->columnSpan(8)
+                                ->columnSpan(6)
                                 ->extraAttributes(['class' => 'ar-invoice-doc-spacer'])
                                 ->schema([]),
 
                             Forms\Components\Grid::make(1)
-                                ->columnSpan(2)
+                                ->columnSpan(3)
                                 ->extraAttributes(['class' => 'ar-invoice-doc-info'])
                                 ->schema([
                                     Forms\Components\TextInput::make('doc_no')
@@ -162,7 +139,7 @@ class InvoiceResource extends Resource
                                         ->dehydrated(false)
                                         ->inlineLabel()
                                         ->extraAttributes(['class' => 'ar-inline-field'])
-                                        ->default('Open'),
+                                        ->formatStateUsing(fn() => 'Open'),
 
                                     Forms\Components\DatePicker::make('posting_date')
                                         ->required()
@@ -219,11 +196,11 @@ class InvoiceResource extends Resource
 
                                                 ]),
                                             Forms\Components\Grid::make(1)
-                                                ->columnSpan(7)
+                                                ->columnSpan(6)
                                                 ->extraAttributes(['class' => 'ar-invoice-doc-spacer'])
                                                 ->schema([]),
                                             Forms\Components\Grid::make(1)
-                                                ->columnSpan(2)
+                                                ->columnSpan(3)
                                                 ->extraAttributes(['class' => 'ar-invoice-lines-header-left'])
                                                 ->schema([
                                                     Forms\Components\Select::make('line_type_filter')
@@ -296,7 +273,9 @@ class InvoiceResource extends Resource
                                                         ->form([
                                                             Forms\Components\Select::make('selected_item_id')
                                                                 ->label('Item')
+                                                                ->options(fn() => Item::query()->orderBy('item_no')->limit(50)->pluck('item_no', 'id'))
                                                                 ->searchable()
+                                                                ->preload()
                                                                 ->required()
                                                                 ->getSearchResultsUsing(fn(string $search) => self::searchItems($search))
                                                                 ->getOptionLabelUsing(fn($value) => Item::find($value)?->item_no),
@@ -423,7 +402,7 @@ class InvoiceResource extends Resource
                                                 ->options([
                                                     'O0' => 'O0',
                                                     'O2' => 'O2',
-                                                    'S'  => 'S',
+
                                                 ])
                                                 ->default('S')
                                                 ->live()
@@ -564,11 +543,11 @@ class InvoiceResource extends Resource
                                 ]),
 
                             Forms\Components\Grid::make(1)
-                                ->columnSpan(7)
+                                ->columnSpan(6)
                                 ->schema([]),
 
                             Forms\Components\Grid::make(1)
-                                ->columnSpan(2)
+                                ->columnSpan(3)
                                 ->extraAttributes(['class' => 'ar-invoice-totals'])
                                 ->schema([
                                     Forms\Components\TextInput::make('total_before_discount')
@@ -655,21 +634,30 @@ class InvoiceResource extends Resource
     }
 
 
+    /**
+     * Autofills the Contact Person / BP Currency / KRA PIN / Customer Name
+     * fields whenever a customer is picked from the Customer Code select.
+     * These fields are plain editable inputs (not tied to formatStateUsing),
+     * so this only sets their initial value on selection — the user can
+     * freely edit them afterwards without their edits being overwritten.
+     */
+    protected static function syncCustomerFields(Set $set, $customerId): void
+    {
+        $customer = $customerId ? Customer::find($customerId) : null;
+
+        $set('customer_id', $customer?->id);
+        $set('contact_person', $customer?->contact_person);
+        $set('bp_currency', $customer?->bp_currency ?? 'KES');
+        $set('kra_pin', $customer?->kra_pin);
+        $set('customer_name', $customer?->name);
+    }
+
     public static function searchCustomersByCode(string $search): \Illuminate\Support\Collection
     {
         return Customer::where('code', 'like', "%{$search}%")
             ->orWhere('name', 'like', "%{$search}%")
             ->limit(20)
             ->pluck('code', 'id');
-    }
-
-
-    public static function searchCustomersByName(string $search): \Illuminate\Support\Collection
-    {
-        return Customer::where('name', 'like', "%{$search}%")
-            ->orWhere('code', 'like', "%{$search}%")
-            ->limit(20)
-            ->pluck('name', 'id');
     }
 
 

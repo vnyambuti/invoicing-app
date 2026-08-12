@@ -723,12 +723,18 @@ class InvoiceResource extends Resource
                 Tables\Columns\TextColumn::make('doc_no')->label('No.')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('customer.name')->label('Customer')->searchable(),
                 Tables\Columns\TextColumn::make('posting_date')->date()->sortable(),
+                Tables\Columns\TextColumn::make('document_date')->label('Document Date')->date()->sortable()->toggleable(),
+                Tables\Columns\TextColumn::make('kra_pin')->label('KRA PIN')->searchable()->toggleable(),
                 Tables\Columns\TextColumn::make('salesEmployee.name')->label('Sales Employee'),
+                Tables\Columns\TextColumn::make('owner.name')->label('Owner')->toggleable(),
                 Tables\Columns\TextColumn::make('total_after_discount')->label('Total')->money('KES', divideBy: 1)->alignRight(),
+                Tables\Columns\TextColumn::make('tax')->label('Tax')->money('KES', divideBy: 1)->alignRight()->toggleable(),
+                Tables\Columns\TextColumn::make('applied_amount')->label('Applied')->money('KES', divideBy: 1)->alignRight()->toggleable(),
                 Tables\Columns\TextColumn::make('balance_due')->label('Balance Due')->money('KES', divideBy: 1)->alignRight(),
+                Tables\Columns\IconColumn::make('payment_order_run')->label('Payment Run')->boolean()->toggleable(),
             ])
             ->defaultSort('created_at', 'desc')
-            ->actions([Tables\Actions\EditAction::make(), Tables\Actions\ViewAction::make()])
+            // ->actions([Tables\Actions\EditAction::make(), Tables\Actions\ViewAction::make()])
             ->bulkActions([Tables\Actions\DeleteBulkAction::make()]);
     }
 

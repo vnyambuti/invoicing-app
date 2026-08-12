@@ -481,7 +481,7 @@ class InvoiceResource extends Resource
                         ->schema([
 
                             Forms\Components\Grid::make(1)
-                                ->columnSpan(3)
+                                ->columnSpan(4)
                                 ->extraAttributes(['class' => 'ar-invoice-footer-left'])
                                 ->schema([
                                     Forms\Components\Select::make('sales_employee_id')
@@ -543,7 +543,7 @@ class InvoiceResource extends Resource
                                 ]),
 
                             Forms\Components\Grid::make(1)
-                                ->columnSpan(6)
+                                ->columnSpan(5)
                                 ->schema([]),
 
                             Forms\Components\Grid::make(1)
@@ -634,13 +634,6 @@ class InvoiceResource extends Resource
     }
 
 
-    /**
-     * Autofills the Contact Person / BP Currency / KRA PIN / Customer Name
-     * fields whenever a customer is picked from the Customer Code select.
-     * These fields are plain editable inputs (not tied to formatStateUsing),
-     * so this only sets their initial value on selection — the user can
-     * freely edit them afterwards without their edits being overwritten.
-     */
     protected static function syncCustomerFields(Set $set, $customerId): void
     {
         $customer = $customerId ? Customer::find($customerId) : null;

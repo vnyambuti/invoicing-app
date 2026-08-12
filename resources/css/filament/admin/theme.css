@@ -176,3 +176,8 @@ input.text-right {
 .ar-invoice-lines td:has(.ar-line-select-with-create) button {
     flex: 0 0 auto;
 }
+
+.fi-header {
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
+}
